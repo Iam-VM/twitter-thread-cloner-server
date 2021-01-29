@@ -4,28 +4,28 @@ const path = require("path");
 
 
 router.post('/pdf', (req, res) => {
-    const pyProcess = childProcess.spawn('python3', [path.join(__dirname, 'main.py'), req.body.url.toString(), 'pdf']);
+    const pyProcess = childProcess.spawn('python3', [path.join(__dirname + '/../twitterScript/main.py'), req.body.url.toString(), 'pdf']);
+    pyProcess.stderr.pipe(process.stderr);
     pyProcess.stdout.on('data', (data) => {
-        console.log(data.toString())
-        res.send(data);
+        res.send(`http://localhost:${process.env.PORT || 4000}/download/${data}`);
     });
 });
 
 router.post('/txt', (req, res) => {
-    console.log("reached /txt")
-    const pyProcess = childProcess.spawn('python3', [path.join('../twitterScript/main.py'), req.body.url.toString(), 'txt']);
+    const pyProcess = childProcess.spawn('python3', [path.join(__dirname + '/../twitterScript/main.py'), req.body.url.toString(), 'txt']);
+    pyProcess.stderr.pipe(process.stderr);
     pyProcess.stdout.on('data', (data) => {
-        console.log(data)
         res.send(`http://localhost:${process.env.PORT || 4000}/download/${data}`);
     });
 });
 
 router.post('/ppt', (req, res) => {
-    const pyProcess = childProcess.spawn('python3', [path.join(__dirname, 'script.py'), req.body.url.toString(), 'ppt']);
+    const pyProcess = childProcess.spawn('python3', [path.join(__dirname + '/../twitterScript/main.py'), req.body.url.toString(), 'ppt']);
+    pyProcess.stderr.pipe(process.stderr);
     pyProcess.stdout.on('data', (data) => {
-        console.log(data.toString())
-        res.send(data);
+        res.send(`http://localhost:${process.env.PORT || 4000}/download/${data}`);
     });
 });
+
 
 module.exports = router;

@@ -70,7 +70,8 @@ if __name__ == '__main__':
         now = datetime.now().strftime("%H:%M:%S.%f")
         now_hex = hashlib.md5(now.encode()).hexdigest()
         filename = responses[-1]["screen_name"] + "--" + now_hex + ".txt"
-        fp = open("../fileSystem/" + filename, "w")
+#         fp = open(os.path.abspath(os.path.join(os.getcwd(), "/fileSystem", filename)), "w")
+        fp = open(os.path.join(os.getcwd() + "/fileSystem", filename), "w")
         for tweet in reversed(responses):
             fp.write("----------------------**---------------------------\n")
             fp.write("by @" + tweet["screen_name"] + "\n\n")
@@ -79,7 +80,7 @@ if __name__ == '__main__':
         lfp.write("printing filename " + filename)
         # TODO: test
         lfp.close()
-        print(filename)
+        sys.stdout.write(filename)
 
     elif to_format_from_args == "ppt":
         # TODO: create txt here

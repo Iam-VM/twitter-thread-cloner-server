@@ -2,15 +2,11 @@ const path = require('path');
 const express = require('express');
 const convertRoute = require('./convertRoutes/index');
 const bodyParser = require('body-parser');
-const childProcess = require('child_process');
 
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-childProcess.exec(`source ${path.join(__dirname,'twitterScript/venv/bin/activate')}`);
-
 
 
 const PORT = process.env.PORT || 4000
