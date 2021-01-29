@@ -1,0 +1,176 @@
+----------------------**---------------------------
+by @girba
+
+“Developers spend most of their time figuring the system out."
+
+Let’s dissect this a little. 
+
+🧵
+
+1/
+----------------------**---------------------------
+by @girba
+
+The oldest reference on the topic I know of dates back to 1979:
+
+Zelkowitz, Shaw, and Gannon. Principles of software engineering and design. Prentice-Hall Englewood Cliffs, 1979.
+
+2/ https://t.co/6b44pymDKw
+----------------------**---------------------------
+by @girba
+
+It said that most of the development time was spent on maintenance (67% in the book).
+
+Granted, the book does not specify how the figure was obtained. Still, it was deemed an important enough problem to attract significant research attention since then.
+
+3/ https://t.co/lR3p2tn7BH
+----------------------**---------------------------
+by @girba
+
+So, how far are we now, more than 4 decades later?
+
+Let’s look at this recent paper:
+Xia, Bao, Lo, Xing, Hassan, &amp; Li. Measuring Program Comprehension: A Large-Scale Field Study with Professionals. IEEE Transactions on Software Engineering, 44, 951-976.
+
+4/ https://t.co/QFgotuYRoJ
+----------------------**---------------------------
+by @girba
+
+This paper describes in great details how the figures are obtained.
+
+And it says that Comprehension took on average ~58%.
+
+Now, take a closer look at the third column in the table: it says Navigation (24%), and that is considered separately from the Comprehension effort!
+
+5/ https://t.co/Qsj5AC4Bm2
+----------------------**---------------------------
+by @girba
+
+So, after 4 decades, we can observe that not much has changed beside learning how to measure the “figuring out” time.
+
+So what?
+
+Well, that is the single largest expense we have. If we want to optimize anything in our discipline we should look at this part first.
+
+6/
+----------------------**---------------------------
+by @girba
+
+We talk often about how we build systems, but how often do you talk about how you spend the “figuring out" time?
+
+If we do not talk about it, it’s not explicit. If it’s not explicit, it does not get optimized.
+
+7/
+----------------------**---------------------------
+by @girba
+
+If we do talk about how the “figuring out the system” time is spent, we notice that people spend it reading.
+
+In fact, as the above paper also shows, comprehension is essentially measured as reading! The two are considered as mostly synonymous.
+
+https://t.co/1HcRz7PUrX
+
+8/
+----------------------**---------------------------
+by @girba
+
+So, how should we talk about how we figure the system out?
+
+Given that not much happened for 4 decades, we should entertain the idea that maybe we should frame the problem differently.
+
+Please, bare with me. This is where it gets interesting.
+
+9/
+----------------------**---------------------------
+by @girba
+
+So, why do developers read code?
+
+Because they want to figure the situation enough to know what to do next. The intent is important.  This is decision making.
+
+From this perspective, reading is just the means through which information is gathered from data.
+
+10/ https://t.co/d73Fm3iAxv
+----------------------**---------------------------
+by @girba
+
+Now, before you can do something significant about anything, you have to name it. Otherwise it's like with Voldemort.
+
+So, many winters ago, I called the “figuring the system out to know what to do next" effort assessment. And I said we should optimize development around it.
+
+11/ https://t.co/KgMtdf1d1U
+----------------------**---------------------------
+by @girba
+
+For a whole decade my colleagues and I explored this idea. And it led us to #MoldableDevelopment.
+
+What’s that?
+
+Reading is the most manual way to extract information out of data. It does not scale and leads to incomplete information &amp; uncertainty.
+
+https://t.co/XapQ7Czylu
+
+12/
+----------------------**---------------------------
+by @girba
+
+Software is hard enough. Not knowing what the current system is like should not be an acceptable variable in the equation.
+
+A hand drawn picture about the current system is a belief. Decisions should not be based on beliefs. Not in engineering.
+
+https://t.co/4w2nFDSy8o
+
+13/
+----------------------**---------------------------
+by @girba
+
+So, how does #MoldableDevelopment work?
+
+Once we accept that systems are data, it becomes obvious we should approach it like data, too. How do we do that?
+
+Data science tells us that you first start from the problem and then reason through a tool that matches the context.
+
+14/ https://t.co/bbEeT6LnnQ
+----------------------**---------------------------
+by @girba
+
+The key idea of #MoldableDevelopment is that the tool is custom built after knowing the problem. Hence it’s  contextual, and because of it, it can take care of the boring part of reading.
+
+Of course, for this to be practical, the cost of creating custom tools must be small.
+
+15/
+----------------------**---------------------------
+by @girba
+
+I see the flow of constructing custom tools during development, and, ideally, for every single development problem, as the next major leap in software development.
+
+https://t.co/sjroxtyU5n
+
+16/
+----------------------**---------------------------
+by @girba
+
+In a decade from now, we should not be measuring the "figuring the system out” in terms of reading. We should occupy our energy with solving actual problems.
+
+To get there we should start by talking about how not to read code.
+
+We cannot afford not to.
+
+17/
+----------------------**---------------------------
+by @girba
+
+We created #gtoolkit to provide a concrete start for the "how not to read code" conversation.
+
+Go to https://t.co/yRa5VGXIY9. Play with it. Feel #MoldableDevelopment.
+
+And engage with us:
+https://t.co/TJULnAyBE7
+
+Let’s make that conversation happen.
+
+18/18
+----------------------**---------------------------
+by @girba
+
+https://t.co/xPzCy5bcm0
