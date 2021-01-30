@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     json_response = send_req(built_url, headers)
     responses.append({"full_text": json_response["full_text"],
-                      "entities": json_response["entities"],
+                      "entities": json_response["extended_entities"],
                       "screen_name": json_response["user"]["screen_name"],
                       "profile_image_url_https": json_response["user"]["profile_image_url_https"]})
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         built_url = 'https://api.twitter.com/1.1/statuses/show.json?id=' + json_response["in_reply_to_status_id_str"] + "&tweet_mode=extended"
         json_response = send_req(built_url, headers)
         responses.append({"full_text": json_response["full_text"],
-                          "entities": json_response["entities"],
+                          "entities": json_response["extended_entities"],
                           "screen_name": json_response["user"]["screen_name"],
                           "profile_image_url_https": json_response["user"]["profile_image_url_https"]})
 
@@ -70,7 +70,6 @@ if __name__ == '__main__':
         now = datetime.now().strftime("%H:%M:%S.%f")
         now_hex = hashlib.md5(now.encode()).hexdigest()
         filename = responses[-1]["screen_name"] + "--" + now_hex + ".txt"
-#         fp = open(os.path.abspath(os.path.join(os.getcwd(), "/fileSystem", filename)), "w")
         fp = open(os.path.join(os.getcwd() + "/fileSystem", filename), "w")
         for tweet in reversed(responses):
             fp.write("----------------------**---------------------------\n")
