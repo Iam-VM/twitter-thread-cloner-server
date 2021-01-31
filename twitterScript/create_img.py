@@ -1,125 +1,154 @@
+import json
+
 from PIL import Image, ImageDraw, ImageFont
 import requests
-import hashlib
-import os
-from datetime import datetime
+import html
 
-# test data
-import json
-rp = open("response.json", "r")
-json_response = json.load(rp)
-rp.close()
-responses = [{
-    "full_text": json_response["full_text"],
-    "entities": json_response["extended_entities"],
-    "screen_name": json_response["user"]["screen_name"],
-    "profile_image_url_https": json_response["user"]["profile_image_url_https"]}]
+# # test data
+# import json
+# rp = open("response.json", "r")
+# json_response = json.load(rp)
+# rp.close()
+# responses = [{
+#     "full_text": json_response["full_text"],
+#     "entities": json_response["extended_entities"],
+#     "quoted_status": None,
+#     "screen_name": json_response["user"]["screen_name"],
+#     "profile_image_url_https": json_response["user"]["profile_image_url_https"]}]
+
+# solving line space overflow issue
+def process_full_text(full_text):
+    max_len = 105
+    full_text_list = [phrase + "\n" for phrase in full_text.split("\n")]
+    processed_full_text = ""
+    for line in full_text_list:
+        if len(line) > max_len:
+            i = max_len
+            while i > 0:
+                if line[i] == " ":
+                    line = line[:i] + "\n" + line[i + 1:]
+                    break
+                i -= 1
+        processed_full_text += line
+
+    return processed_full_text
+
+
+def process_response(tweet_response, mode):
+    # creating url for larger dp
+    screen_name = "user_name"
+    try:
+        if mode == "q":
+            dp_url_splitted = tweet_response["user"]["profile_image_url_https"].split("_normal")
+            screen_name = tweet_response["user"]["screen_name"]
+            dp_url_merged = dp_url_splitted[0] + dp_url_splitted[1]
+            tweet_response["profile_image_url_https"] = dp_url_merged
+        elif mode == "s":
+            dp_url_splitted = tweet_response["profile_image_url_https"].split("_normal")
+            screen_name = tweet_response["screen_name"]
+            dp_url_merged = dp_url_splitted[0] + dp_url_splitted[1]
+            tweet_response["profile_image_url_https"] = dp_url_merged
+    except Exception as e:
+        print(e)
+
+    # configs
+    photo_media_thumbnail_size = (600, 600)
+    quoted_status_image_size = (600, 600)
+    dummy_canvas_size = (1149, 800)
+    dp_size = (75, 75)
+    padding = (40, 50, 10, 30)
+    # username_font = ImageFont.truetype("twitterScript/montserrat/Montserrat-Bold.ttf", 30)
+    # full_text_font = ImageFont.truetype("twitterScript/montserrat/Montserrat-Regular.ttf", 18)
+    # TEST MODE
+    username_font = ImageFont.truetype("montserrat/Montserrat-Bold.ttf", 30)
+    full_text_font = ImageFont.truetype("montserrat/Montserrat-Regular.ttf", 18)
+
+
+    # buckets
+    media_bucket = []
+
+    # handle media
+    if "entities" in tweet_response and tweet_response["entities"] is not None:
+        if "media" in tweet_response["entities"]:
+            for media in tweet_response["entities"]["media"]:
+                # handling photo media
+                # if media["type"] == "photo":
+                #     media_image = Image.open(requests.get(media["media_url"], stream=True).raw)
+                #     media_image.thumbnail(photo_media_thumbnail_size)
+                #     media_bucket.append(media_image)
+                media_image = Image.open(requests.get(media["media_url"], stream=True).raw, formats=["png", "jpg", "jpeg", "gif", "mp4"])
+                media_image.thumbnail(photo_media_thumbnail_size)
+                media_bucket.append(media_image)
+
+    # handle quoted status
+    quoted_status_image = None
+    if "quoted_status" in tweet_response and tweet_response["quoted_status"] is not None:
+        quoted_status_image = process_response(tweet_response["quoted_status"], "q")
+        quoted_status_image.thumbnail(quoted_status_image_size)
+
+    # handle full_text and user_name header
+    dummy_canvas = Image.new("RGB", dummy_canvas_size, "#ffffff")
+    dummy_crop_box_size = (0, 0, 0, 0)
+    if "full_text" in tweet_response:
+        dummy_draw = ImageDraw.Draw(dummy_canvas)
+
+        # opening dp
+        dp_p = Image.open(requests.get(tweet_response["profile_image_url_https"], stream=True).raw)
+        dp_p.thumbnail(dp_size)
+
+        dummy_canvas.paste(dp_p, (padding[0], padding[1]))
+        username_size = dummy_draw.textsize("@" + screen_name, username_font)
+        user_name_position = (
+            padding[0] + dp_size[0] + 30,
+            padding[1] + dp_size[1]/2 - username_size[1]/2
+        )
+        dummy_draw.text(user_name_position, "@" + screen_name, fill="#000000", font=username_font)
+
+        # printing full_text
+        full_text = html.unescape(process_full_text(tweet_response["full_text"]))
+        full_text_size = dummy_draw.textsize(full_text, full_text_font)
+        full_text_position = (
+            padding[0],
+            padding[1] + dp_size[1] + 30
+        )
+        dummy_draw.text(full_text_position, full_text, fill="#000000", font=full_text_font)
+
+        # cropping
+        dummy_crop_box_size = (
+            0,
+            0,
+            dummy_canvas_size[0],
+            full_text_position[1] + full_text_size[1] + 30
+        )
+        dummy_canvas = dummy_canvas.crop(dummy_crop_box_size)
+
+    # calculating total height of media
+    media_net_height = 0
+    for media in media_bucket:
+        media_net_height += media.size[1]
+
+    # creating main canvas
+    canvas_size = (
+        dummy_canvas_size[0],
+        dummy_crop_box_size[3] + media_net_height + len(media_bucket) * 10 + 30 + (quoted_status_image_size[1] if quoted_status_image is not None else 0)
+    )
+    canvas = Image.new("RGB", canvas_size, "#ffffff")
+    canvas.paste(dummy_canvas, (0, 0))
+
+    if quoted_status_image is not None:
+        canvas.paste(quoted_status_image, (0, dummy_crop_box_size[3]))
+
+    main_canvas_media_position_height = dummy_crop_box_size[3] + 10 + (quoted_status_image_size[1] if quoted_status_image is not None else 0)
+    if media_bucket:
+        for media_image in media_bucket:
+            canvas.paste(media_image, (int(canvas_size[0]/2) - int(media_image.size[0]/2), main_canvas_media_position_height))
+            main_canvas_media_position_height += media_image.size[1] + 10
+
+    return canvas
 
 
 def create_img(tweet_response, dir_name, count):
-    # creating url for larger dp
-    dp_url_splitted = tweet_response["profile_image_url_https"].split("_normal")
-    dp_url_merged = dp_url_splitted[0] + dp_url_splitted[1]
-    tweet_response["profile_image_url_https"] = dp_url_merged
+    tweet_img = process_response(tweet_response, "s")
+    tweet_img.save("{}/{}.pdf".format(dir_name, count))
+    return count + 1
 
-    # creating a canvas to work with
-    canvas_width = 1149
-    canvas_height = 800
-    canvas_size = (canvas_width, canvas_height)
-    canvas = Image.new("RGB", canvas_size, "#ffffff")
-    img_draw = ImageDraw.Draw(canvas)
-
-    # paddings
-    left_padding = 50
-    top_padding = 40
-    right_padding = 50
-    # TODO: Set this
-    bottom_padding = None
-
-    # opening dp and thumbnail sizing
-    dp_p = Image.open(requests.get(tweet_response["profile_image_url_https"], stream=True).raw)
-    dp_p_thumbnail_size = (75, 75)
-    dp_p.thumbnail(dp_p_thumbnail_size)
-
-    # pasting dp
-    dp_position = (left_padding, top_padding)
-    canvas.paste(dp_p, dp_position)
-
-    # writing username
-    username_font = ImageFont.truetype("montserrat/Montserrat-Bold.ttf", 30)
-    username_text_width, username_text_height = img_draw.textsize("@" + tweet_response["screen_name"], username_font)
-    username_position = (
-        dp_position[0] + dp_p_thumbnail_size[0] + dp_p_thumbnail_size[0] / 2,
-        dp_position[1] + dp_p_thumbnail_size[1] / 2 - username_text_height/2)
-    img_draw.text(username_position, "@" + tweet_response["screen_name"], fill="#000000", font=username_font)
-
-    # flag representing presence of full_text
-    has_full_text = False
-
-    # other_vars
-    full_text_text_width = None
-    full_text_text_height = None
-
-    if tweet_response["full_text"]:
-        has_full_text = True
-        # writing full_text
-        full_text_font = ImageFont.truetype("montserrat/Montserrat-Regular.ttf", 18)
-        full_text_text_width, full_text_text_height = img_draw.textsize(tweet_response["full_text"], full_text_font)
-        full_text_position = (
-            dp_position[0],
-            dp_position[1] + dp_p_thumbnail_size[1] + 50
-        )
-        img_draw.text(full_text_position, tweet_response["full_text"], fill="#000000", font=full_text_font)
-
-        # cropping
-        crop_box = (
-            0,
-            0,
-            canvas_width,
-            top_padding + dp_p_thumbnail_size[1] + 50 + full_text_text_height + 50
-        )
-        cropped_canvas = canvas.crop(crop_box)
-        # TODO: get rid of this in production
-        # cropped_canvas.show()
-        cropped_canvas.save("{}/{}.png".format(dir_name, count))
-        count += 1
-
-    if tweet_response["entities"]["media"]:
-        media_number = 1
-        for media in tweet_response["entities"]["media"]:
-            # TODO: handle non photo media
-            if media["type"] == "photo":
-                if not has_full_text:
-                    if media_number == 1:
-                        media_position_main_page = (
-                            left_padding,
-                            top_padding + dp_p_thumbnail_size[1] + 50
-                        )
-                        media_size_main_page = (
-                            canvas_width - 2 * left_padding,
-                            canvas_height - media_position_main_page[1] + 10
-                        )
-                        media_p = Image.open(requests.get(media["media_url"], stream=True).raw)
-                        media_p.thumbnail(media_size_main_page)
-                        canvas.paste(media_position_main_page, media_p)
-                        media_number += 1
-                        # TODO: get rid of this in production
-                        # canvas.show()
-                        canvas.save("{}/{}.png".format(dir_name, count))
-                        count += 1
-
-                media_size_more_media = (
-                    canvas_width - 2 * left_padding,
-                    canvas_height - 10
-                )
-                media_p = Image.open(requests.get(media["media_url"], stream=True).raw)
-                media_p.thumbnail(media_size_more_media)
-                # TODO: get rid of this in production
-                # media_p.show()
-                media_p.save("{}/{}.png".format(dir_name, count))
-                count += 1
-
-    return count
-
-
-create_img(responses[0], "cache_fileSystem/gibra", 0)

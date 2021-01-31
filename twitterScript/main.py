@@ -1,9 +1,11 @@
+import json
 import sys
 import os
 from dotenv import load_dotenv
 import requests
 import hashlib
 from datetime import datetime
+import create_PDF
 
 # TODO: test
 lfp = open("./script.log", "a")
@@ -28,7 +30,7 @@ def build_url(tweet_url):
 
 
 def send_req(url, header):
-    # TODO: test
+    # TEST
     lfp.write("Entered send_req \n")
     response = requests.request("GET", url, headers=header)
     if response.status_code != 200:
@@ -41,48 +43,74 @@ def send_req(url, header):
 
 
 if __name__ == '__main__':
-    # TODO: test
+    # TEST
     lfp.write("Entered main if\n")
     built_url = build_url(url_from_args)
     headers = {"Authorization": "Bearer {}".format(BEARER_TOKEN)}
 
     json_response = send_req(built_url, headers)
     responses.append({"full_text": json_response["full_text"],
-                      "entities": json_response["extended_entities"],
                       "screen_name": json_response["user"]["screen_name"],
+                      "entities": json_response["extended_entities"] if "extended_entities" in json_response else json_response["entities"],
+                      "quoted_status": json_response["quoted_status"] if json_response["is_quote_status"] else None,
                       "profile_image_url_https": json_response["user"]["profile_image_url_https"]})
 
     while json_response["in_reply_to_status_id_str"] is not None:
         built_url = 'https://api.twitter.com/1.1/statuses/show.json?id=' + json_response["in_reply_to_status_id_str"] + "&tweet_mode=extended"
         json_response = send_req(built_url, headers)
         responses.append({"full_text": json_response["full_text"],
-                          "entities": json_response["extended_entities"],
+                          "quoted_status": json_response["quoted_status"] if json_response["is_quote_status"] else None,
+                          "entities": json_response["extended_entities"] if "extended_entities" in json_response else json_response["entities"],
                           "screen_name": json_response["user"]["screen_name"],
                           "profile_image_url_https": json_response["user"]["profile_image_url_https"]})
 
+    responses.reverse()
+
     if to_format_from_args == "pdf":
         # TODO: create pdf here
-        print()
+        filename = create_PDF.create_pdf(responses)
+
+        sys.stdout.write(filename)
 
     elif to_format_from_args == "txt":
-        # TODO: test
+        # TEST
         lfp.write("entered txt if\n")
         now = datetime.now().strftime("%H:%M:%S.%f")
         now_hex = hashlib.md5(now.encode()).hexdigest()
         filename = responses[-1]["screen_name"] + "--" + now_hex + ".txt"
         fp = open(os.path.join(os.getcwd() + "/fileSystem", filename), "w")
-        for tweet in reversed(responses):
-            fp.write("----------------------**---------------------------\n")
+        # for tests
+        # fp = open(os.path.join(os.getcwd() + "/../fileSystem", filename), "w")
+        for tweet in responses:
+            fp.write("----------------------Tweet---------------------------\n")
             fp.write("by @" + tweet["screen_name"] + "\n\n")
-            fp.writelines(tweet["full_text"] + "\n")
+            fp.writelines(tweet["full_text"] + "\n\n")
+            if "entities" in tweet:
+                if "media" in tweet["entities"]:
+                    fp.write("----Media----\n")
+                    for media in tweet["entities"]["media"]:
+                        fp.write("{}: {}\n".format(media["type"], media["media_url"]))
+                    fp.write("--------\n")
+            if "quoted_status" in tweet and tweet["quoted_status"] is not None:
+                fp.write("----Quoted----\n")
+                if "full_text" in tweet["quoted_status"]:
+                    fp.write("{}\n\n".format(tweet["quoted_status"]["full_text"]))
+                if "entities" in tweet["quoted_status"]:
+                    if "media" in tweet["quoted_status"]["entities"]:
+                        fp.write("-Quoted-Media-\n")
+                        for media in tweet["quoted_status"]["entities"]["media"]:
+                            fp.write("{}: {}\n".format(media["type"], media["media_url"]))
+                        fp.write("---\n\n")
+                fp.write("--------\n\n")
+
         fp.close()
         lfp.write("printing filename " + filename)
-        # TODO: test
+        # TEST
         lfp.close()
         sys.stdout.write(filename)
 
     elif to_format_from_args == "ppt":
-        # TODO: create txt here
+        # TODO: create ppt here
         print()
 
     else:
