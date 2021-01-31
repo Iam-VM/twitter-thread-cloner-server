@@ -4,3 +4,7 @@ node_modules
 venv
 script.log
 response.json
+fileSystem/*
+!fileSystem/.gitkeep
+twitterScript/cache_fileSystem/*
+!twitterScript/cache_fileSystem/.gitkeep
