@@ -27,7 +27,10 @@ def merge_pdf(dir_name, count):
             pdf_writer.addPage(pdf_reader.getPage(page))
 
     # Write out the merged PDF
-    out_file_name = dir_name.split("/")[1]
+    out_file_name = dir_name.split("cache_fileSystem/")[1]
+    # with open(os.getcwd() + "/fileSystem/{}.pdf".format(out_file_name), 'wb') as out:
+    #     pdf_writer.write(out)
+    # TEST
     with open("../fileSystem/{}.pdf".format(out_file_name), 'wb') as out:
         pdf_writer.write(out)
 
