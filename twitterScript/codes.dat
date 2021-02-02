@@ -1,0 +1,5 @@
+CRF = "creating file"
+PTF = "proceeding to tweet fetch"
+FTW:N = "fetching tweet N"
+TFC = "tweet fetch complete"
+PRO = "processing"
