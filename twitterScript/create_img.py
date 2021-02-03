@@ -62,7 +62,6 @@ def process_response(tweet_response, mode):
     # username_font = ImageFont.truetype("montserrat/Montserrat-Bold.ttf", 30)
     # full_text_font = ImageFont.truetype("open-sans/OpenSans-Regular.ttf", 18)
 
-
     # buckets
     media_bucket = []
 
@@ -75,7 +74,10 @@ def process_response(tweet_response, mode):
                 #     media_image = Image.open(requests.get(media["media_url"], stream=True).raw)
                 #     media_image.thumbnail(photo_media_thumbnail_size)
                 #     media_bucket.append(media_image)
-                media_image = Image.open(requests.get(media["media_url"], stream=True).raw)
+                try:
+                    media_image = Image.open(requests.get(media["media_url"], stream=True).raw)
+                except:
+                    media_image = Image.open("no-image.jpg")
                 media_image.thumbnail(photo_media_thumbnail_size)
                 media_bucket.append(media_image)
 
@@ -92,7 +94,10 @@ def process_response(tweet_response, mode):
         dummy_draw = ImageDraw.Draw(dummy_canvas)
 
         # opening dp
-        dp_p = Image.open(requests.get(tweet_response["profile_image_url_https"], stream=True).raw)
+        try:
+            dp_p = Image.open(requests.get(tweet_response["profile_image_url_https"], stream=True).raw)
+        except:
+            dp_p = Image.open("no-image.jpg")
         dp_p.thumbnail(dp_size)
 
         dummy_canvas.paste(dp_p, (padding[0], padding[1]))
