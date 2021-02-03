@@ -56,11 +56,11 @@ def process_response(tweet_response, mode):
     dummy_canvas_size = (1100, 800)
     dp_size = (75, 75)
     padding = (40, 50, 10, 30)
-    username_font = ImageFont.truetype("twitterScript/montserrat/Montserrat-Bold.ttf", 30)
-    full_text_font = ImageFont.truetype("twitterScript/montserrat/Montserrat-Regular.ttf", 18)
+    # username_font = ImageFont.truetype("twitterScript/montserrat/Montserrat-Bold.ttf", 30)
+    # full_text_font = ImageFont.truetype("twitterScript/montserrat/Montserrat-Regular.ttf", 18)
     # TEST MODE
-    # username_font = ImageFont.truetype("montserrat/Montserrat-Bold.ttf", 30)
-    # full_text_font = ImageFont.truetype("open-sans/OpenSans-Regular.ttf", 18)
+    username_font = ImageFont.truetype("montserrat/Montserrat-Bold.ttf", 30)
+    full_text_font = ImageFont.truetype("open-sans/OpenSans-Regular.ttf", 18)
 
     # buckets
     media_bucket = []
