@@ -104,9 +104,9 @@ def create_zip(tweet_responses):
     # creating dir
     dir_name = tweet_responses[-1]["screen_name"] + "__" + hashlib.md5(
         datetime.now().strftime("%H:%M:%S.%f").encode()).hexdigest()
-    # dir_name = "twitterScript/cache_fileSystem/{}".format(dir_name)
+    dir_name = "twitterScript/cache_fileSystem/{}".format(dir_name)
     # TEST MODE
-    dir_name = "cache_fileSystem/{}".format(dir_name)
+    # dir_name = "cache_fileSystem/{}".format(dir_name)
     os.mkdir(dir_name)
     os.mkdir(dir_name + "/media")
     for tweet_response in tweet_responses:
@@ -114,9 +114,9 @@ def create_zip(tweet_responses):
         extract_media(tweet_response, dir_name=dir_name + "/media")
     sys.stdout.write("ZIP")
     sys.stdout.flush()
-    # filename = "fileSystem/{}".format(dir_name.split("/")[-1])
+    filename = "fileSystem/{}".format(dir_name.split("/")[-1])
     # TEST MODE
-    filename = "../fileSystem/{}".format(dir_name.split("/")[-1])
+    # filename = "../fileSystem/{}".format(dir_name.split("/")[-1])
     filename = zip_dir(filename, dir_name)
 
     return filename
