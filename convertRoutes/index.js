@@ -2,9 +2,12 @@ const router = require('express').Router();
 const childProcess = require('child_process');
 const path = require("path");
 
+const production = true;
+const domain = (production)?"http://ec2-13-234-111-75.ap-south-1.compute.amazonaws.com:4000/":"http://localhost:4000/";
+const download_url_slice = `${domain}download/`;
+
 
 router.post('/pdf', (req, res) => {
-    const download_url_slice =  "http://localhost:4000/download/";
     const pyProcess = childProcess.spawn('python3', [path.join(__dirname + '/../twitterScript/main.py'), req.body.url.toString(), 'pdf']);
     pyProcess.stderr.pipe(process.stderr);
     pyProcess.stdout.on('data', (data) => {
@@ -14,7 +17,6 @@ router.post('/pdf', (req, res) => {
                 res.send(download_url_slice + data.slice(3))
                 break;
             case "CRF":
-                console.log("CRF");
                 req.io.emit("statusCode", "creating file...");
                 break;
             case "PTF":
@@ -23,20 +25,20 @@ router.post('/pdf', (req, res) => {
                 // TODO: send "proceeding to tweet fetch"
                 break;
             case "FTW":
-                console.log("FTW");
                 const dataSplitted = data.split(":");
                 req.io.emit("statusCode", `fetching tweet ${dataSplitted[1]}`);
                 // TODO: send "Fetchning tweet N"
                 break;
             case "PRO":
-                console.log("PRO");
                 req.io.emit("statusCode", "processing tweets...");
                 // TODO: send "processing tweets"
                 break;
             case "MRG":
-                console.log("MRG");
                 req.io.emit("statusCode", "merging tweets...");
                 // TODO send "merging tweets"
+                break;
+            case "ERR":
+                req.io.emit("statusCode", "ERR");
                 break;
             default:
                 console.log("raise error");
@@ -46,7 +48,6 @@ router.post('/pdf', (req, res) => {
 });
 
 router.post('/txt', (req, res) => {
-    const download_url_slice =  "http://localhost:4000/download/";
     const pyProcess = childProcess.spawn('python3', [path.join(__dirname + '/../twitterScript/main.py'), req.body.url.toString(), 'txt']);
     pyProcess.stderr.pipe(process.stderr);
     pyProcess.stdout.on('data', (data) => {
@@ -56,25 +57,24 @@ router.post('/txt', (req, res) => {
                 res.send(download_url_slice + data.slice(3))
                 break;
             case "CRF":
-                console.log("CRF");
                 req.io.emit("statusCode", "creating file...");
                 // TODO: send "creating file"
                 break;
             case "PTF":
-                console.log("PTF");
                 req.io.emit("statusCode", "proceeding to fetch tweets...");
                 // TODO: send "proceeding to tweet fetch"
                 break;
             case "FTW":
-                console.log("FTW");
                 const dataSplitted = data.split(":");
                 req.io.emit("statusCode", `fetching tweet ${dataSplitted[1]}`);
                 // TODO: send "Fetchning tweet N"
                 break;
             case "PRO":
-                console.log("PRO");
                 req.io.emit("statusCode", "processing tweets...");
                 // TODO: send "processing"
+                break;
+            case "ERR":
+                req.io.emit("statusCode", "ERR");
                 break;
             default:
                 console.log("raise error");
@@ -83,9 +83,8 @@ router.post('/txt', (req, res) => {
     });
 });
 
-router.post('/ppt', (req, res) => {
-    const download_url_slice =  "http://localhost:4000/download/";
-    const pyProcess = childProcess.spawn('python3', [path.join(__dirname + '/../twitterScript/main.py'), req.body.url.toString(), 'ppt']);
+router.post('/zip', (req, res) => {
+    const pyProcess = childProcess.spawn('python3', [path.join(__dirname + '/../twitterScript/main.py'), req.body.url.toString(), 'zip']);
     pyProcess.stderr.pipe(process.stderr);
     pyProcess.stdout.on('data', (data) => {
         data = data.toString()
@@ -94,25 +93,35 @@ router.post('/ppt', (req, res) => {
                 res.send(download_url_slice + data.slice(3))
                 break;
             case "CRF":
-                console.log("CRF");
                 req.io.emit("statusCode", "creating file...");
                 // TODO: send "creating file"
                 break;
             case "PTF":
-                console.log("PTF");
                 req.io.emit("statusCode", "proceeding to fetch tweets...");
                 // TODO: send "proceeding to tweet fetch"
                 break;
             case "FTW":
-                console.log("FTW");
                 const dataSplitted = data.split(":");
                 req.io.emit("statusCode", `fetching tweet ${dataSplitted[1]}`);
-                // TODO: send "Fetchning tweet N"
+                // TODO: send "Fetching tweet N"
                 break;
             case "PRO":
-                console.log("PRO");
                 req.io.emit("statusCode", "processing tweets...");
                 // TODO: send "processing"
+                break;
+            case "EXM":
+                req.io.emit("statusCode", "extracting media...");
+                // TODO: send "extracting media"
+                break;
+            case "ZIP":
+                req.io.emit("statusCode", "zipping directory...");
+                // TODO: send "zipping directory"
+                break;
+            case "EMN":
+                req.io.emit("statusCode", `extracting media ${data.split(":")[1]}`);
+                break;
+            case "ERR":
+                req.io.emit("statusCode", "ERR");
                 break;
             default:
                 console.log("raise error");
