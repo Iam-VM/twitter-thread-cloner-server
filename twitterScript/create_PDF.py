@@ -36,7 +36,7 @@ def merge_pdf(dir_name, count):
         pdf_writer.write(out)
     # TEST
     # with open("../fileSystem/{}.pdf".format(out_file_name), 'wb') as out:
-    #     pdf_writer.write(out)
+        # pdf_writer.write(out)
 
     # removing cache
     shutil.rmtree(dir_name)

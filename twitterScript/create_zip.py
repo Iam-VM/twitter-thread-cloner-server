@@ -12,19 +12,83 @@ def extract_media(tweet_response, dir_name):
     if "entities" in tweet_response and tweet_response["entities"] is not None:
         if "media" in tweet_response["entities"]:
             for media in tweet_response["entities"]["media"]:
+                downloaded = False
                 sys.stdout.write("EMN:{}".format(count))
                 sys.stdout.flush()
-                wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
-                count += 1
+                if media["type"] == "photo":
+                    wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
+                    count += 1
+                elif media["type"] == "video":
+                    if "video_info" in media:
+                        if "variants" in media["video_info"]:
+                            for video in media["video_info"]["variants"]:
+                                if "content_type" in video:
+                                    if video["content_type"] == "video/mp4":
+                                        wget.download(video["url"], "{}/{}".format(dir_name, video["url"].split("/")[-1]), bar=None)
+                                        count += 1
+                                        downloaded = True
+                                        break
+                    if not downloaded:
+                        wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
+                        count += 1
+                elif media["type"] == "animated_gif":
+                    if "video_info" in media:
+                        if "variants" in media["video_info"]:
+                            for video in media["video_info"]["variants"]:
+                                if "content_type" in video:
+                                    if video["content_type"] == "video/mp4":
+                                        wget.download(video["url"], "{}/{}".format(dir_name, video["url"].split("/")[-1]), bar=None)
+                                        count += 1
+                                        downloaded = True
+                                        break
+                    if not downloaded:
+                        wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
+                        count += 1
+                else:
+                    wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
+                    count += 1
 
     if "quoted_status" in tweet_response and tweet_response["quoted_status"] is not None:
         if "entities" in tweet_response["quoted_status"]:
             if "media" in tweet_response["entities"]:
                 for media in tweet_response["entities"]["media"]:
+                    downloaded = False
                     sys.stdout.write("EMN:{}".format(count))
                     sys.stdout.flush()
-                    wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]))
-                    count += 1
+                    if media["type"] == "photo":
+                        wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
+                        count += 1
+                    elif media["type"] == "video":
+                        if "video_info" in media:
+                            if "variants" in media["video_info"]:
+                                for video in media["video_info"]["variants"]:
+                                    if "content_type" in video:
+                                        if video["content_type"] == "video/mp4":
+                                            wget.download(video["url"], "{}/{}".format(dir_name, video["url"].split("/")[-1]), bar=None)
+                                            count += 1
+                                            downloaded = True
+                                            break
+                        if not downloaded:
+                            wget.download(media["media_url"],
+                                          "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
+                            count += 1
+                    elif media["type"] == "animated_gif":
+                        if "video_info" in media:
+                            if "variants" in media["video_info"]:
+                                for video in media["video_info"]["variants"]:
+                                    if "content_type" in video:
+                                        if video["content_type"] == "video/mp4":
+                                            wget.download(video["url"], "{}/{}".format(dir_name, video["url"].split("/")[-1]), bar=None)
+                                            count += 1
+                                            downloaded = True
+                                            break
+                        if not downloaded:
+                            wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
+                            count += 1
+                    else:
+
+                        wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1]), bar=None)
+                        count += 1
 
 
 def zip_dir(out, to_zip_dir):
