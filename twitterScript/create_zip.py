@@ -13,9 +13,9 @@ def extract_media(tweet_response, dir_name):
         if "media" in tweet_response["entities"]:
             for media in tweet_response["entities"]["media"]:
                 downloaded = False
-                sys.stdout.write("EMN:{}".format(count))
-                sys.stdout.flush()
                 if media["type"] == "photo":
+                    sys.stdout.write("EMN:{}".format(count))
+                    sys.stdout.flush()
                     wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1].split("?")[0]), bar=None)
                     count += 1
                 elif media["type"] == "video":
@@ -24,11 +24,15 @@ def extract_media(tweet_response, dir_name):
                             for video in media["video_info"]["variants"]:
                                 if "content_type" in video:
                                     if video["content_type"] == "video/mp4":
+                                        sys.stdout.write("EMN:{}".format(count))
+                                        sys.stdout.flush()
                                         wget.download(video["url"], "{}/{}".format(dir_name, video["url"].split("/")[-1].split("?")[0]), bar=None)
                                         count += 1
                                         downloaded = True
                                         break
                     if not downloaded:
+                        sys.stdout.write("EMN:{}".format(count))
+                        sys.stdout.flush()
                         wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1].split("?")[0]), bar=None)
                         count += 1
                 elif media["type"] == "animated_gif":
@@ -37,14 +41,20 @@ def extract_media(tweet_response, dir_name):
                             for video in media["video_info"]["variants"]:
                                 if "content_type" in video:
                                     if video["content_type"] == "video/mp4":
+                                        sys.stdout.write("EMN:{}".format(count))
+                                        sys.stdout.flush()
                                         wget.download(video["url"], "{}/{}".format(dir_name, video["url"].split("/")[-1].split("?")[0]), bar=None)
                                         count += 1
                                         downloaded = True
                                         break
                     if not downloaded:
+                        sys.stdout.write("EMN:{}".format(count))
+                        sys.stdout.flush()
                         wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1].split("?")[0]), bar=None)
                         count += 1
                 else:
+                    sys.stdout.write("EMN:{}".format(count))
+                    sys.stdout.flush()
                     wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1].split("?")[0]), bar=None)
                     count += 1
 
@@ -56,6 +66,8 @@ def extract_media(tweet_response, dir_name):
                     sys.stdout.write("EMN:{}".format(count))
                     sys.stdout.flush()
                     if media["type"] == "photo":
+                        sys.stdout.write("EMN:{}".format(count))
+                        sys.stdout.flush()
                         wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1].split("?")[0]), bar=None)
                         count += 1
                     elif media["type"] == "video":
@@ -64,11 +76,15 @@ def extract_media(tweet_response, dir_name):
                                 for video in media["video_info"]["variants"]:
                                     if "content_type" in video:
                                         if video["content_type"] == "video/mp4":
+                                            sys.stdout.write("EMN:{}".format(count))
+                                            sys.stdout.flush()
                                             wget.download(video["url"], "{}/{}".format(dir_name, video["url"].split("/")[-1].split("?")[0]), bar=None)
                                             count += 1
                                             downloaded = True
                                             break
                         if not downloaded:
+                            sys.stdout.write("EMN:{}".format(count))
+                            sys.stdout.flush()
                             wget.download(media["media_url"],
                                           "{}/{}".format(dir_name, media["media_url"].split("/")[-1].split("?")[0]), bar=None)
                             count += 1
@@ -78,15 +94,20 @@ def extract_media(tweet_response, dir_name):
                                 for video in media["video_info"]["variants"]:
                                     if "content_type" in video:
                                         if video["content_type"] == "video/mp4":
+                                            sys.stdout.write("EMN:{}".format(count))
+                                            sys.stdout.flush()
                                             wget.download(video["url"], "{}/{}".format(dir_name, video["url"].split("/")[-1].split("?")[0]), bar=None)
                                             count += 1
                                             downloaded = True
                                             break
                         if not downloaded:
+                            sys.stdout.write("EMN:{}".format(count))
+                            sys.stdout.flush()
                             wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1].split("?")[0]), bar=None)
                             count += 1
                     else:
-
+                        sys.stdout.write("EMN:{}".format(count))
+                        sys.stdout.flush()
                         wget.download(media["media_url"], "{}/{}".format(dir_name, media["media_url"].split("/")[-1].split("?")[0]), bar=None)
                         count += 1
 
