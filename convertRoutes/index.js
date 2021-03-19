@@ -3,7 +3,7 @@ const childProcess = require('child_process');
 const path = require("path");
 
 const production = true;
-const domain = (production)?"http://twittertcloner.ddns.net:4000/":"http://localhost:4000/";
+const domain = (production)?"http://ec2-3-94-79-211.compute-1.amazonaws.com:4000/":"http://localhost:4000/";
 const download_url_slice = `${domain}download/`;
 
 
